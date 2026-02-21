@@ -15,7 +15,7 @@ const proposalSchema = new mongoose.Schema({
     enum: ['APP', 'SITE', 'API'],
   },
   version: {
-    type: {Number},
+    type: Number,
     idempotencyKey: String,
     deletedAt: Date
   },

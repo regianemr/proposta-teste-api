@@ -40,6 +40,7 @@ app.get("/clients/:id", async (req, res) => {
 app.post("/proposals", async (req, res) => {
   try {
     const proposal = req.body;
+    proposal.id = nanoid()
     const newProposals = await proposalModel.create(proposal)
     res.json(newProposals)
   } catch (error) {
