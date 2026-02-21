@@ -3,6 +3,7 @@ import express from 'express';
 import { nanoid } from 'nanoid';
 import connectDB from './config/database.js';
 import clientModel from './models/client.js';
+import proposalModel from './models/proposal.js';
 dotenv.config();
 
 const app = express();
@@ -30,6 +31,17 @@ app.get("/clients/:id", async (req, res) => {
     const clients = await clientModel.find({id})
     console.log(clients)
     res.json(clients)
+  } catch (error) {
+    console.log('error', error);
+    res.json({error})
+  }
+})
+
+app.post("/proposals", async (req, res) => {
+  try {
+    const proposal = req.body;
+    const newProposals = await proposalModel.create(proposal)
+    res.json(newProposals)
   } catch (error) {
     console.log('error', error);
     res.json({error})
