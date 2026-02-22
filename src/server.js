@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import { nanoid } from 'nanoid';
 import connectDB from './config/database.js';
+import checkIdempotency from './middlewares/middleware.js';
 import auditModel from './models/audit.js';
 import clientModel from './models/client.js';
 import proposalModel from './models/proposal.js';
@@ -38,7 +39,7 @@ app.get("/clients/:id", async (req, res) => {
   }
 })
 
-app.post("/proposals", async (req, res) => {
+app.post("/proposals", checkIdempotency, async (req, res) => {
   try {
     const proposal = req.body;
     proposal.id = nanoid()
