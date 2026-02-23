@@ -139,7 +139,7 @@ app.get("/proposals/:id/audit", async (req, res) => {
     res.json({error})
   }
 })
-
+// Exclusão lógica
 app.delete("/proposals/:id", async(req, res) => {
   try {
     const id = req.params.id
