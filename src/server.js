@@ -117,8 +117,7 @@ app.get("/proposals/:id", async (req, res) => {
 
 app.get("/proposals", async (req, res) => {
   try {
-    const proposal = req.body
-    const proposals = await proposalModel.find(proposal)
+    const proposals = await proposalModel.find({deleted_at: null})
     console.log(proposals)
     res.json(proposals)
   } catch (error) {
