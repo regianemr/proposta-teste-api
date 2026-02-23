@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const proposalSchema = new mongoose.Schema({
   id: { type: String, required: true},
   client_id: { type: String, required: true },
-  produtc: { type: String, required: true },
+  product: { type: String, required: true },
   monthly_amount: { type: Number, required: true },
   status: { 
     type: String,
@@ -16,9 +16,10 @@ const proposalSchema = new mongoose.Schema({
   },
   version: {
     type: Number,
-    idempotencyKey: String,
-    deletedAt: Date
+    default: 0
   },
+  idempotencyKey: String,
+  deleted_at: { type: Date, default: null }
 
 }, {timestamps: true });
 
