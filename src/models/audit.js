@@ -8,6 +8,7 @@ const auditSchema = new mongoose.Schema({
     enum: [ 'CREATED', 'UPDATED_FIELDS', 'STATUS_CHANGED', 'DELETED_LOGICAL'] 
   },
   payload: Object,
+  createdAt: Date
 
 }, {timestamps: true });
 
