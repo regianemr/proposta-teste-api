@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import _ from 'lodash';
 import { nanoid } from 'nanoid';
 import connectDB from './config/database.js';
 import checkIdempotency from './middlewares/middleware.js';
@@ -51,14 +52,23 @@ app.post("/proposals", checkIdempotency, async (req, res) => {
   }
 })
 
-
-
 app.patch("/proposals/:id", async (req, res) => {
   try {
     const id = req.params.id
-    const proposals = await proposalModel.find({id})
-    console.log(proposals)
-    res.json(proposals)
+    const proposal = await proposalModel.findOne({id})
+    const version = proposal.version
+    const updated = _.pickBy(req.body, (v, k) => ['product','monthly_amount','origin'].includes(k))
+    const result = await proposalModel.findOneAndUpdate(
+      {id, version},
+      {
+        $set: updated,
+        $inc: {version: 1}
+      },
+      {
+        new: true
+      }
+    )
+    res.json(result)
   } catch (error) {
     console.log('error', error);
     res.json({error})
@@ -70,7 +80,11 @@ app.post("/proposals/:proposal_id/:status", async (req, res) => {
     console.log(req.params)
     const proposal_id = req.params.proposal_id
     const newStatus = req.params.status
+    const finalStatus = ['APPROVED', 'REJECTED', 'CANCELED']
     const proposal = await proposalModel.findOne({id: proposal_id})
+    if (finalStatus.includes(proposal.status)) {
+      return res.status(400).json({ message: 'O status final não pode ser alterado!'})
+    }
     const audit = {
       id: nanoid(),
       proposal_id,
@@ -120,6 +134,22 @@ app.get("/proposals/:id/audit", async (req, res) => {
     const proposals = await auditModel.find({proposal_id: id})
     console.log("asfasfaf", proposals)
     res.json(proposals)
+  } catch (error) {
+    console.log('error', error);
+    res.json({error})
+  }
+})
+
+app.delete("/proposals/:id", async(req, res) => {
+  try {
+    const id = req.params.id
+    await proposalModel.updateOne(
+      {id},
+      {
+        $set: {deleted_at: new Date()}
+      }
+    )
+    res.status(204).json({message: 'Deletado!'})
   } catch (error) {
     console.log('error', error);
     res.json({error})
